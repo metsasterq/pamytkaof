@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg width='1080' height='1080' viewBox='0 0 1080 1080' fill='none' xmlns='http://www.w3.org/2000/svg'><rect width='1080' height='1080' fill='%23CA0000'/><path d='M660.14 453.492H421.095V732H273V349H808V732H660.14V453.492Z' fill='%231F2022'/></svg>" />
-  <title>Памятка по документам — Конструктор сделки</title>
+  <title>Памятка по документам 2026 — Конструктор сделки</title>
   <style>
     @font-face {
       font-family: 'Bisou Expanded';
@@ -641,11 +641,15 @@
           : 'Паспорт: 1 стр., страница с регистрацией (при отсутствии постоянной — временная прописка), страница с семейным положением, разворот 18–19 стр.';
 
         if (part === '1') {
-          const docs = ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН'];
-          if (married) {
-            docs.push('Нотариальное согласие супруга/супруги (или брачный договор)');
-          }
-          sections.push({ title: 'Документы для ДДУ', items: docs });
+          sections.push({
+            title: 'Документы для ДДУ',
+            items: [
+              'Паспорт',
+              'Снилс',
+              'ИНН',
+              'График платежей (в случае рассрочки)'
+            ]
+          });
         } else if (part === '2_joint') {
           const docs = ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН'];
           if (married) docs.push('Свидетельство о заключении брака');
