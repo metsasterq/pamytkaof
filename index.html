@@ -172,6 +172,8 @@
       margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
       line-height: 1.3;
     }
+    .sec-heading-text { display: flex; flex-direction: column; gap: 2px; }
+    .sec-subtitle { font-size: 13px; font-weight: 600; color: #55565A; }
     .dot { width: 9px; height: 9px; border-radius: 50%; background: #CA0000; flex-shrink: 0; }
     .sec-card ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .sec-card li {
@@ -684,7 +686,7 @@
       if (type === 'result_ip') {
         sections.push({
           title: 'Информация для ДДУ',
-          items: ['ИНН', 'ОГРН (ОГРНИП)', 'Паспорт', 'Номер телефона, электронная почта', 'Реквизиты счёта (ЕГРИП)', 'СНИЛС']
+          items: ['ИНН', 'ОГРН (ОГРНИП)', 'Паспорт (2,3 стр., прописка, семейное положение)', 'Номер телефона, электронная почта', 'Реквизиты счёта (ЕГРИП)', 'СНИЛС']
         });
         return { titleBadge, sections, important, notes };
       }
@@ -693,15 +695,14 @@
         const pay = getAnswer('payment');
         const poa = getAnswer('foreign_poa') === 'yes';
         const dduDocs = [
-          'Паспорт',
+          'Паспорт иностранного гражданина',
           'Перевод паспорта (или вид на жительство — кроме Казахстана и Белоруссии)',
           'Документ, подтверющий право пребывания (патент, миграционная карта и т.д.)'
         ];
         if (pay === 'mortgage') {
-          dduDocs.push('Свидетельство о праве нахождения в РФ', 'СНИЛС', 'ИНН');
-        } else {
-          dduDocs.push('СНИЛС и ИНН — при наличии в РФ');
+          dduDocs.push('Свидетельство о праве нахождения в РФ');
         }
+        dduDocs.push('СНИЛС', 'ИНН');
         sections.push({ title: 'Информация для ДДУ', items: dduDocs });
         if (poa) {
           sections.push({
@@ -715,7 +716,7 @@
           });
           important.push('К доверенности обязательно прилагается тождественность.');
         }
-        important.push('Если есть российский номер телефона, СНИЛС и ИНН — нужна электронная регистрация. Иначе — бумажная регистрация и нотариальное согласие/перевод в РФ.');
+        important.push('Подписание ДДУ только электронное (через ЭЦП), должны быть СНИЛС, ИНН, телефон и почта РФ.');
         return { titleBadge, sections, important, notes };
       }
 
@@ -725,7 +726,7 @@
         const poa = getAnswer('military_poa') === 'yes';
         const dduDocs = [
           'Номер телефона, электронная почта',
-          'Паспорт — все страницы (включая пустые)',
+          'Паспорт (2,3 стр., прописка, семейное положение)',
           'СНИЛС, ИНН',
           'Сертификат НИС'
         ];
@@ -777,7 +778,7 @@
         const married = getAnswer('cert_marital') === 'married';
         const poa = getAnswer('cert_poa') === 'yes';
         const dduDocs = [
-          'Паспорт: 1 стр., страница с регистрацией, страница с семейным положением, разворот 18–19 стр.',
+          'Паспорт (2,3 стр., прописка, семейное положение)',
           'СНИЛС, ИНН',
           'Сам сертификат',
           'Уведомление (памятка) об условиях сертификата'
@@ -812,22 +813,25 @@
 
         const passportReq = pay === 'mortgage'
           ? 'Паспорт — все страницы (включая пустые)'
-          : 'Паспорт: 1 стр., страница с регистрацией (при отсутствии постоянной — временная прописка), страница с семейным положением, разворот 18–19 стр.';
+          : 'Паспорт (2,3 стр., прописка, семейное положение)';
 
         if (part === '1') {
-          sections.push({
-            title: 'Информация для ДДУ',
-            items: [
-              'Паспорт',
-              'Снилс',
-              'ИНН',
-              'График платежей (в случае рассрочки)'
-            ]
-          });
+          const dduDocs = [
+            'Паспорт (2,3 стр., прописка, семейное положение)',
+            'Снилс',
+            'ИНН',
+            'График платежей (в случае рассрочки)'
+          ];
+          if (poa) dduDocs.push('Оригинал доверенности + тождественность');
+          sections.push({ title: 'Информация для ДДУ', items: dduDocs });
         } else if (part === '2_joint') {
           const docs = ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН'];
           if (married) docs.push('Свидетельство о заключении брака');
-          sections.push({ title: 'От каждого участника', items: docs });
+          sections.push({
+            title: 'Информация для ДДУ',
+            subtitle: '(От каждого участника сделки)',
+            items: docs
+          });
         } else if (part === 'parents_kids') {
           const pDocs = ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН'];
           if (married) pDocs.push('Свидетельство о заключении брака');
@@ -843,10 +847,10 @@
           });
         } else if (part === 'shares') {
           sections.push({
-            title: 'От каждого участника сделки',
-            items: ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН']
+            title: 'Информация для ДДУ',
+            subtitle: '(От каждого участника сделки)',
+            items: ['Номер телефона, электронная почта', passportReq, 'СНИЛС, ИНН', 'Свидетельство о браке/смерти']
           });
-          important.push('Важно уточнить, состоит ли кто-то из участников в браке — могут потребоваться дополнительные документы.');
         }
 
         if (pay === 'mortgage' && mType === 'family') {
@@ -891,17 +895,22 @@
         }
 
         if (poa) {
-          sections.push({
-            title: 'На доверенное лицо',
-            items: [
-              'Номер телефона, электронная почта',
-              'Паспорт: 1 стр., страница с регистрацией, страница с семейным положением',
-              'СНИЛС, ИНН',
-              'Оригинал доверенности',
-              'Тождественность к доверенности (обязательно)'
-            ]
-          });
-          important.push('К доверенности обязательно прилагается тождественность.');
+          const poaDocs = part === '1'
+            ? [
+                'Паспорт (2,3 стр., прописка, семейное положение)',
+                'СНИЛС',
+                'ИНН',
+                'Эл. почта и телефон'
+              ]
+            : [
+                'Номер телефона, электронная почта',
+                'Паспорт: 1 стр., страница с регистрацией, страница с семейным положением',
+                'СНИЛС, ИНН',
+                'Оригинал доверенности',
+                'Тождественность к доверенности (обязательно)'
+              ];
+          sections.push({ title: 'На доверенное лицо', items: poaDocs });
+          if (part !== '1') important.push('К доверенности обязательно прилагается тождественность.');
         }
 
         if (pay === 'mortgage' && part === 'parents_kids') {
@@ -931,7 +940,8 @@
         const itemsHtml = sec.items.map(item =>
           '<li><span class="check">✓</span><span>' + item + '</span></li>'
         ).join('');
-        return '<div class="sec-card"><h3><span class="dot"></span>' + sec.title + '</h3><ul>' + itemsHtml + '</ul></div>';
+        const headingHtml = '<span class="sec-heading-text">' + sec.title + (sec.subtitle ? '<span class="sec-subtitle">' + sec.subtitle + '</span>' : '') + '</span>';
+        return '<div class="sec-card"><h3><span class="dot"></span>' + headingHtml + '</h3><ul>' + itemsHtml + '</ul></div>';
       }).join('');
 
       const importantHtml = data.important.map(txt =>
